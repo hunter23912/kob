@@ -1,17 +1,22 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import axios from "axios";
+import { ref, onMounted } from "vue";
+
+let bots = ref([]);
+onMounted(() => {
+  axios.get("http://localhost:8080/pk/getbotinfo/").then((resp) => {
+    resp = resp.data;
+    console.log(resp);
+    bots.value = resp;
+  });
+});
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div v-for="(bot, index) in bots" :key="index">
+    <div>bot名称：{{ bot.name }}</div>
+    <div>bot战力：{{ bot.rating }}</div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>

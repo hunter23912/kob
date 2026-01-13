@@ -15,7 +15,7 @@ public class BotinfoController {
         List<Map<String, String>> list = new java.util.LinkedList<>();
         Map<String, String> bot1 = new HashMap<>();
         bot1.put("name", "tiger");
-        bot1.put("age", "18");
+        bot1.put("rating", "18");
 
         Map<String, String> bot2 = new HashMap<>();
         bot2.put("name", "apple");
