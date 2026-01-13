@@ -10,8 +10,7 @@ import GameMap from "./GameMap.vue";
 
 <style scoped>
 .playground {
-  width: 60vw;
-  height: 70vh;
+  height: 75vh;
   margin: 40px auto;
 }
 </style>
