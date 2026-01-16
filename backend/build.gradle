@@ -24,8 +24,15 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'mysql:mysql-connector-java:8.0.33'
+    implementation("com.baomidou:mybatis-plus-spring-boot4-starter:3.5.16")
+    implementation 'com.baomidou:mybatis-plus-generator:3.5.16'
+    implementation("org.springframework.boot:spring-boot-starter-security:4.0.1")
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()
