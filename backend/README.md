@@ -51,3 +51,7 @@ FLUSH PRIVILEGES;
 - `mapper`层：将`pojo`层的`class`中的操作，映射成`SQL`语句。
 - `service`层：写具体的业务逻辑，组合使用`mapper`层中的操作。
 - `controller`层：处理HTTP请求，接收用户输入，调用服务层逻辑，并返回响应。
+- 常用组织方式
+  - 通常在`controller`层中处理请求和响应调用`service`接口；
+  - 在`service`层中写接口，在其子目录`impl`下写接口的实现；
+  - 在`mapper`层中处理数据库操作，在`pojo`层中定义数据结构。
