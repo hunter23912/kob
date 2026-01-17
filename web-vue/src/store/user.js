@@ -37,6 +37,18 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const autoLogin = async () => {
+    const jwt_token = localStorage.getItem("jwt_token");
+    if (jwt_token) {
+      updateToken(jwt_token);
+      await getInfo({
+        success: () => {},
+        error: () => {},
+      });
+    }
+    updatePullingInfo(false);
+  };
+
   const updateToken = (newToken) => {
     token.value = newToken;
   };
@@ -85,6 +97,7 @@ export const useUserStore = defineStore("user", () => {
     pulling_info,
     user,
     login,
+    autoLogin,
     updateToken,
     updatePullingInfo,
     getInfo,

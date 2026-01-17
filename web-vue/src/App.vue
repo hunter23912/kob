@@ -1,7 +1,7 @@
 <script setup>
 import NavBar from "./components/NavBar.vue";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.min.js";
+import "bootstrap/dist/js/bootstrap";
 import { RouterView } from "vue-router";
 import axios from "axios";
 

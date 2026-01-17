@@ -62,7 +62,7 @@ import { useUserStore } from "../../../store/user";
 const userStore = useUserStore();
 ```
 
-#### ref and computed 的结合用法
+#### ref 和 computed 的结合用法
 
 ```js
 const id = ref("");
@@ -80,6 +80,75 @@ const user = computed(() => ({
 }));
 ```
 
+> `ref`绑定变量，`reactive`绑定对象，`computed`计算属性
+
 #### 基于 jwt 的退出逻辑
 
 在前端删除`token`
+
+#### git 代码回滚和恢复
+
+```bash
+git reset --hard HEAD~1/HEAD^  # 回滚到上一个版本
+git reset --hard <commit_id>  # 回滚到指定版本
+git checkout -b <new_branch_name> <commit_id>  # 从指定版本创建
+git reflog  # 查看操作历史
+git reset --hard <reflog_id>  # 恢复到之前的某个操作
+```
+
+#### axios的post和get写法
+
+- `post`请求在第三个参数中传递`headers`，第二个参数传递`data`。
+- `get`请求在第二个参数中传递`headers`和`params`
+
+#### axios的.then和async/await写法区别
+
+- `.then`写法是基于回调函数的，适合简单的请求处理，但容易导致回调地狱，指使用多个嵌套的`.then()`或回调函数，导致代码缩进加深，难以阅读和维护。
+
+  ```js
+  axios
+    .get("http://example.com")
+    .then((resp1) => {
+      axios
+        .get(resp1.data.url)
+        .then((resp2) => {
+          axios
+            .get(resp2.data.url)
+            .then((resp3) => {
+              // 处理 resp3
+              console.log("完成");
+            })
+            .catch((err) => console.error(err));
+        })
+        .catch((err) => console.error(err));
+    })
+    .catch((err) => console.error(err));
+  ```
+
+- `async/await`写法更简洁，易读，适合复杂的请求处理，性能上几乎相同，都不阻塞主线程。
+
+  ```js
+  async function fetchData() {
+    try {
+      const resp1 = await axios.get("http://example.com");
+      const resp2 = await axios.get(resp1.data.url);
+      const resp3 = await axios.get(resp2.data.url);
+      // 处理 resp3
+      console.log("完成");
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  fetchData();
+  ```
+
+  - 通常用`resp`或`response`表示响应结果。解析`resp.data`时使用`data`表示数据。
+
+- `await`让代码顺序执行，看起来慢，实际是异步执行；`then()`允许后续代码立即执行，但如果需要顺序处理结果，会导致回调地狱。`await`更间接，避免嵌套。
+
+#### `#`在JS开和web开发中的特殊含义
+
+- `#`表示锚点链接，指向页面内的特定位置，点击后页面会滚动到该位置。
+- `#`后面的内容不会被发送到服务器，仅在浏览器端处理。
+- 例如，`http://example.com/page#section1`表示跳转到`page`页面的`section1`位置。

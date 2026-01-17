@@ -2,7 +2,6 @@
 import { useRoute } from "vue-router";
 import { computed } from "vue";
 import { useUserStore } from "../store/user";
-
 const route = useRoute();
 let route_name = computed(() => route.name);
 
@@ -54,17 +53,20 @@ const logout = () => {
         </ul>
         <ul class="navbar-nav" v-if="user.is_login">
           <li class="nav-item dropdown">
-            <router-link
-              :class="['nav-link', 'dropdown-toggle', route_name === 'user_bot_index' && 'active']"
-              :to="{ name: 'user_bot_index' }"
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
               {{ user.username }}
-            </router-link>
-            <ul class="dropdown-menu">
-              <li><router-link class="dropdown-item" :to="{ name: 'user_bot_index' }">我的军队</router-link></li>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li>
+                <router-link class="dropdown-item" :to="{ name: 'user_bot_index' }">我的军队</router-link>
+              </li>
               <li><hr class="dropdown-divider" /></li>
               <li><router-link @click="logout" class="dropdown-item" :to="{ name: '404' }">退出</router-link></li>
             </ul>

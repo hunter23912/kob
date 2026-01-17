@@ -1,7 +1,7 @@
 <script setup>
 import ContentField from "../../../components/ContentField.vue";
 import { useUserStore } from "../../../store/user";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import router from "../../../router";
 
 const userStore = useUserStore();
@@ -11,21 +11,12 @@ const username = ref("");
 const password = ref("");
 const error_message = ref("");
 
-const jwt_token = localStorage.getItem("jwt_token");
-if (jwt_token) {
-  userStore.updateToken(jwt_token);
-  userStore.getInfo({
-    success() {
-      router.push({ name: "home" });
-      userStore.updatePullingInfo(false);
-    },
-    error() {
-      userStore.updatePullingInfo(false);
-    },
-  });
-} else {
-  userStore.updatePullingInfo(false);
-}
+onMounted(async () => {
+  await userStore.autoLogin();
+  if (userStore.is_login) {
+    router.push({ name: "home" });
+  }
+});
 
 const login = () => {
   error_message.value = "";
