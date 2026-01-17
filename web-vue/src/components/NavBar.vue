@@ -1,9 +1,17 @@
 <script setup>
 import { useRoute } from "vue-router";
 import { computed } from "vue";
+import { useUserStore } from "../store/user";
 
 const route = useRoute();
 let route_name = computed(() => route.name);
+
+const userStore = useUserStore();
+const user = computed(() => userStore.user);
+
+const logout = () => {
+  userStore.logout();
+};
 </script>
 
 <template>
@@ -44,7 +52,7 @@ let route_name = computed(() => route.name);
             >
           </li>
         </ul>
-        <ul class="navbar-nav">
+        <ul class="navbar-nav" v-if="user.is_login">
           <li class="nav-item dropdown">
             <router-link
               :class="['nav-link', 'dropdown-toggle', route_name === 'user_bot_index' && 'active']"
@@ -53,13 +61,21 @@ let route_name = computed(() => route.name);
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              hunter
+              {{ user.username }}
             </router-link>
             <ul class="dropdown-menu">
               <li><router-link class="dropdown-item" :to="{ name: 'user_bot_index' }">我的军队</router-link></li>
               <li><hr class="dropdown-divider" /></li>
-              <li><router-link class="dropdown-item" :to="{ name: '404' }">退出</router-link></li>
+              <li><router-link @click="logout" class="dropdown-item" :to="{ name: '404' }">退出</router-link></li>
             </ul>
+          </li>
+        </ul>
+        <ul class="navbar-nav" v-else-if="!userStore.pulling_info">
+          <li class="nav-item">
+            <router-link class="nav-link" role="button" :to="{ name: 'user_account_login' }"> 登录 </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" role="button" :to="{ name: 'user_account_register' }"> 注册 </router-link>
           </li>
         </ul>
       </div>

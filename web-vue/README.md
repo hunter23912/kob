@@ -79,3 +79,7 @@ const user = computed(() => ({
   is_login: is_login.value,
 }));
 ```
+
+#### 基于 jwt 的退出逻辑
+
+在前端删除`token`

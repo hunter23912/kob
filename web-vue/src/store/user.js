@@ -1,3 +1,4 @@
+// 只存放会修改的全局变量（如注册功能，不会修改值，所以不放这里）
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import axios from "axios";
@@ -8,6 +9,7 @@ export const useUserStore = defineStore("user", () => {
   const photo = ref("");
   const token = ref("");
   const is_login = ref(false);
+  const pulling_info = ref(true); // 是否正在拉取用户信息
 
   // computed专门根据其他ref计算出一个新值
   const user = computed(() => ({
@@ -27,11 +29,20 @@ export const useUserStore = defineStore("user", () => {
 
       if (resp.error_message === "success") {
         token.value = resp.token;
+        localStorage.setItem("jwt_token", resp.token);
         data.success(resp); // 登录成功，回调成功处理函数
       }
     } catch (e) {
       data.error(); // 登录失败，回调错误处理函数
     }
+  };
+
+  const updateToken = (newToken) => {
+    token.value = newToken;
+  };
+
+  const updatePullingInfo = (status) => {
+    pulling_info.value = status;
   };
 
   const getInfo = async (data) => {
@@ -56,14 +67,27 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const logout = () => {
+    id.value = "";
+    username.value = "";
+    photo.value = "";
+    token.value = "";
+    is_login.value = false;
+    localStorage.removeItem("jwt_token");
+  };
+
   return {
     id,
     username,
     photo,
     token,
     is_login,
+    pulling_info,
     user,
     login,
+    updateToken,
+    updatePullingInfo,
     getInfo,
+    logout,
   };
 });

@@ -7,9 +7,25 @@ import router from "../../../router";
 const userStore = useUserStore();
 
 // 组件本地的响应式状态
-let username = ref("");
-let password = ref("");
-let error_message = ref("");
+const username = ref("");
+const password = ref("");
+const error_message = ref("");
+
+const jwt_token = localStorage.getItem("jwt_token");
+if (jwt_token) {
+  userStore.updateToken(jwt_token);
+  userStore.getInfo({
+    success() {
+      router.push({ name: "home" });
+      userStore.updatePullingInfo(false);
+    },
+    error() {
+      userStore.updatePullingInfo(false);
+    },
+  });
+} else {
+  userStore.updatePullingInfo(false);
+}
 
 const login = () => {
   error_message.value = "";
@@ -32,7 +48,7 @@ const login = () => {
 </script>
 
 <template>
-  <ContentField>
+  <ContentField v-if="!userStore.pulling_info">
     <div class="row justify-content-center mb-4">
       <div class="col-3">
         <form @submit.prevent="login">

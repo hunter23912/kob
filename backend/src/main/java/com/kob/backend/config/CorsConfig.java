@@ -13,7 +13,7 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowedOrigins(List.of("http://localhost:5173")); // 前端地址
+        // config.setAllowedOrigins(List.of("http://localhost:5173")); // 前端地址
         config.setAllowCredentials(true);
         config.setAllowCredentials(false);
         config.setAllowedOriginPatterns(List.of("*"));
