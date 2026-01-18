@@ -54,6 +54,11 @@ export const useCounterStore = defineStore("counter", () => {
 });
 ```
 
+#### vue3开发的组件化思想
+
+- 主流`vue3`写法,每个`.vue`文件就是一个组件,外部使用默认导入,名字可以自定义,但一般与文件名保持一致。
+- 文件名官方推荐帕斯卡命名法(`PascalCase`),即每个单词首字母大写,如`MyComponent.vue`。
+
 #### pinia store 的引入写法
 
 ```js

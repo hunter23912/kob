@@ -43,6 +43,7 @@ const botadd = reactive({
   title: "",
   description: "",
   content: "",
+  language: "c_cpp", // 默认语言
   error_message: "",
 });
 
@@ -175,13 +176,30 @@ const update_bot = async (bot) => {
                       ></textarea>
                     </div>
                     <div class="mb-3">
-                      <label for="add-bot-code" class="form-label">代码</label>
-                      <!-- <AceEditor
-                        v-model:value="botadd.content"
-                        :language="botadd.language || 'c_cpp'"
-                        theme="dracula"
-                        height="400px"
-                      /> -->
+                      <div class="code-editor-head" style="">
+                        <label class="form-label">代码</label>
+                        <div class="btn-group">
+                          <button
+                            type="button"
+                            class="btn btn-secondary dropdown-toggle language-btn"
+                            data-bs-toggle="dropdown"
+                          >
+                            {{ code_languages.find((param) => param.value === botadd.language)?.label || "选择语言" }}
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li v-for="lang in code_languages" :key="lang.value">
+                              <a
+                                class="dropdown-item"
+                                href="#"
+                                style="font-size: 0.8em"
+                                @click.prevent="selectLanguage(botadd, lang.value)"
+                                >{{ lang.label }}</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <AceEditor v-model="botadd.content" :language="botadd.language" theme="dracula" height="500px" />
                     </div>
                   </div>
                   <div class="modal-footer">
@@ -275,7 +293,7 @@ const update_bot = async (bot) => {
                                 </div>
                               </div>
                               <AceEditor
-                                v-model:value="bot.content"
+                                v-model="bot.content"
                                 :language="bot.language"
                                 theme="dracula"
                                 height="500px"
