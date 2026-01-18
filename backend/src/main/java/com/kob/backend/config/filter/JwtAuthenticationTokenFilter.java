@@ -35,6 +35,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         // 去除 "Bearer " 前缀7个字符
         token = token.substring(7);
 
+        // 解析token出用户id
         String userid;
         try {
             Claims claims = JwtUtil.parseJWT(token);

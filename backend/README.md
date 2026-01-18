@@ -39,6 +39,7 @@ FLUSH PRIVILEGES;
     - `MyBatis-Plus`是`MyBatis`的增强工具，在`MyBatis`的基础上只做增强不做改变，为简化开发、提高效率而生。
   - `mybatis-plus-generator`
     - `MyBatis-Plus`代码生成器，可以根据数据库表结构生成实体类、Mapper接口、Mapper XML文件等代码，极大地提高了开发效率。
+  - `spring-boot-starter-websocket`用于实现联机通信功能。
 
   > 下面两个先别装
   - `spring-boot-starter-security`
