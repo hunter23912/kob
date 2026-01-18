@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      ace-builds:
+        specifier: ^1.43.5
+        version: 1.43.5
       axios:
         specifier: ^1.13.2
         version: 1.13.2
@@ -23,6 +26,9 @@ importers:
       vue-router:
         specifier: ^4.6.4
         version: 4.6.4(vue@3.5.26)
+      vue3-ace-editor:
+        specifier: ^2.2.4
+        version: 2.2.4(ace-builds@1.43.5)(vue@3.5.26)
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^6.0.1
@@ -404,6 +410,9 @@ packages:
   '@vue/shared@3.5.26':
     resolution: {integrity: sha512-7Z6/y3uFI5PRoKeorTOSXKcDj0MSasfNNltcslbFrPpcw6aXRUALq4IfJlaTRspiWIUOEZbrpM+iQGmCOiWe4A==}
 
+  ace-builds@1.43.5:
+    resolution: {integrity: sha512-iH5FLBKdB7SVn9GR37UgA/tpQS8OTWIxWAuq3Ofaw+Qbc69FfPXsXd9jeW7KRG2xKpKMqBDnu0tHBrCWY5QI7A==}
+
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
@@ -579,6 +588,9 @@ packages:
   proxy-from-env@1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
 
+  resize-observer-polyfill@1.5.1:
+    resolution: {integrity: sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==}
+
   rfdc@1.4.1:
     resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
 
@@ -647,6 +659,12 @@ packages:
     resolution: {integrity: sha512-Hz9q5sa33Yhduglwz6g9skT8OBPii+4bFn88w6J+J4MfEo4KRRpmiNG/hHHkdbRFlLBOqxN8y8gf2Fb0MTUgVg==}
     peerDependencies:
       vue: ^3.5.0
+
+  vue3-ace-editor@2.2.4:
+    resolution: {integrity: sha512-FZkEyfpbH068BwjhMyNROxfEI8135Sc+x8ouxkMdCNkuj/Tuw83VP/gStFQqZHqljyX9/VfMTCdTqtOnJZGN8g==}
+    peerDependencies:
+      ace-builds: '*'
+      vue: ^3
 
   vue@3.5.26:
     resolution: {integrity: sha512-SJ/NTccVyAoNUJmkM9KUqPcYlY+u8OVL1X5EW9RIs3ch5H2uERxyyIUI4MRxVCSOiEcupX9xNGde1tL9ZKpimA==}
@@ -912,6 +930,8 @@ snapshots:
 
   '@vue/shared@3.5.26': {}
 
+  ace-builds@1.43.5: {}
+
   asynckit@0.4.0: {}
 
   axios@1.13.2:
@@ -1087,6 +1107,8 @@ snapshots:
 
   proxy-from-env@1.1.0: {}
 
+  resize-observer-polyfill@1.5.1: {}
+
   rfdc@1.4.1: {}
 
   rollup@4.55.1:
@@ -1147,6 +1169,12 @@ snapshots:
   vue-router@4.6.4(vue@3.5.26):
     dependencies:
       '@vue/devtools-api': 6.6.4
+      vue: 3.5.26
+
+  vue3-ace-editor@2.2.4(ace-builds@1.43.5)(vue@3.5.26):
+    dependencies:
+      ace-builds: 1.43.5
+      resize-observer-polyfill: 1.5.1
       vue: 3.5.26
 
   vue@3.5.26:

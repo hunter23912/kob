@@ -3,9 +3,22 @@ import axios from "axios";
 import { useUserStore } from "../../../store/user";
 import { onMounted, ref, reactive } from "vue";
 import { Modal } from "bootstrap/dist/js/bootstrap";
+import AceEditor from "../../../components/AceEditor.vue";
+
 const userStore = useUserStore();
 
 const bots = ref([]);
+
+const code_languages = [
+  { label: "C/C++", value: "c_cpp" },
+  { label: "Java", value: "java" },
+  { label: "Python", value: "python" },
+  { label: "JavaScript", value: "javascript" },
+];
+
+const selectLanguage = (bot, lang) => {
+  bot.language = lang;
+};
 
 const refresh_bots = async () => {
   try {
@@ -14,11 +27,16 @@ const refresh_bots = async () => {
         Authorization: `Bearer ${userStore.token}`,
       },
     });
-    bots.value = resp.data;
+    bots.value = resp.data.map((bot) => ({ ...bot, language: "c_cpp" }));
   } catch (err) {
     console.log("获取失败", err);
   }
 };
+
+// 组件完全挂载后执行
+onMounted(() => {
+  refresh_bots();
+});
 
 // 收集前端页面中的表单数据
 const botadd = reactive({
@@ -60,10 +78,47 @@ const add_bot = async () => {
   }
 };
 
-// 组件完全挂载后执行
-onMounted(() => {
-  refresh_bots();
-});
+const remove_bot = async (bot) => {
+  const resp = await axios.post(
+    "http://localhost:8080/user/bot/remove/",
+    {
+      bot_id: bot.id,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${userStore.token}`,
+      },
+    },
+  );
+
+  const data = resp.data;
+  if (data.error_message === "success") {
+    refresh_bots();
+  }
+};
+
+const update_bot = async (bot) => {
+  const resp = await axios.post(
+    "http://localhost:8080/user/bot/update/",
+    {
+      bot_id: bot.id,
+      title: bot.title,
+      description: bot.description,
+      content: bot.content,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${userStore.token}`,
+      },
+    },
+  );
+
+  const data = resp.data;
+  if (data.error_message === "success") {
+    Modal.getInstance(`#update-bot-btn-${bot.id}`).hide();
+    refresh_bots();
+  }
+};
 </script>
 
 <template>
@@ -90,18 +145,12 @@ onMounted(() => {
             </button>
 
             <!-- 一个浮动窗口 -->
-            <div
-              class="modal fade"
-              id="add-bot-btn"
-              tabindex="-1"
-              aria-labelledby="exampleModalLabel"
-              aria-hidden="true"
-            >
+            <div class="modal fade" id="add-bot-btn">
               <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">创建Bot</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h1 class="modal-title fs-5">创建Bot</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                   </div>
                   <div class="modal-body">
                     <!-- 一个form结构 -->
@@ -127,17 +176,16 @@ onMounted(() => {
                     </div>
                     <div class="mb-3">
                       <label for="add-bot-code" class="form-label">代码</label>
-                      <textarea
-                        v-model="botadd.content"
-                        class="form-control"
-                        id="add-bot-code"
-                        rows="10"
-                        placeholder="请编写Bot脚本"
-                      ></textarea>
+                      <!-- <AceEditor
+                        v-model:value="botadd.content"
+                        :language="botadd.language || 'c_cpp'"
+                        theme="dracula"
+                        height="400px"
+                      /> -->
                     </div>
                   </div>
                   <div class="modal-footer">
-                    <div class="error_message"></div>
+                    <div class="error_message">{{ botadd.error_message }}</div>
                     <button type="button" class="btn btn-primary" @click="add_bot">创建</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
                   </div>
@@ -159,8 +207,89 @@ onMounted(() => {
                   <td>{{ bot.title }}</td>
                   <td>{{ bot.createtime }}</td>
                   <td>
-                    <button type="button" class="btn btn-secondary" style="margin-right: 10px">修改</button>
-                    <button type="button" class="btn btn-danger">删除</button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-toggle="modal"
+                      :data-bs-target="`#update-bot-btn-${bot.id}`"
+                      style="margin-right: 10px"
+                    >
+                      修改
+                    </button>
+                    <button @click="remove_bot(bot)" type="button" class="btn btn-danger">删除</button>
+
+                    <!-- 修改浮动窗口 -->
+                    <div class="modal fade" :id="`update-bot-btn-${bot.id}`">
+                      <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5">更新Bot</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                          </div>
+                          <div class="modal-body">
+                            <!-- 一个form结构 -->
+                            <div class="mb-3">
+                              <label for="update-bot-title" class="form-label">名称</label>
+                              <input
+                                v-model="bot.title"
+                                type="text"
+                                class="form-control"
+                                id="update-bot-title"
+                                placeholder="请输入Bot名称"
+                              />
+                            </div>
+                            <div class="mb-3">
+                              <label for="update-bot-description" class="form-label">简介</label>
+                              <textarea
+                                v-model="bot.description"
+                                class="form-control"
+                                id="update-bot-description"
+                                rows="3"
+                                placeholder="请输入Bot简介"
+                              ></textarea>
+                            </div>
+                            <div class="mb-3">
+                              <div class="code-editor-head" style="">
+                                <label class="form-label">代码</label>
+                                <div class="btn-group">
+                                  <button
+                                    type="button"
+                                    class="btn btn-secondary dropdown-toggle language-btn"
+                                    data-bs-toggle="dropdown"
+                                  >
+                                    {{
+                                      code_languages.find((param) => param.value === bot.language)?.label || "选择语言"
+                                    }}
+                                  </button>
+                                  <ul class="dropdown-menu">
+                                    <li v-for="lang in code_languages" :key="lang.value">
+                                      <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        style="font-size: 0.8em"
+                                        @click.prevent="selectLanguage(bot, lang.value)"
+                                        >{{ lang.label }}</a
+                                      >
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                              <AceEditor
+                                v-model:value="bot.content"
+                                :language="bot.language"
+                                theme="dracula"
+                                height="500px"
+                              />
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <div class="error_message">{{ bot.error_message }}</div>
+                            <button type="button" class="btn btn-primary" @click="update_bot(bot)">保存</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -175,5 +304,16 @@ onMounted(() => {
 <style scoped>
 .error_message {
   color: red;
+}
+
+.code-editor-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.code-editor-head .language-btn {
+  font-size: 0.8em;
 }
 </style>

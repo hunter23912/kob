@@ -152,3 +152,9 @@ git reset --hard <reflog_id>  # 恢复到之前的某个操作
 - `#`表示锚点链接，指向页面内的特定位置，点击后页面会滚动到该位置。
 - `#`后面的内容不会被发送到服务器，仅在浏览器端处理。
 - 例如，`http://example.com/page#section1`表示跳转到`page`页面的`section1`位置。
+
+#### 前端集成代码编辑器
+
+- 推荐使用`vue3-ace-editor`，支持多种编程语言和主题，易于集成和使用。
+  - 几种主题: `textmate`, `monokai`, `dracula`, `tomorrow`, `kuroir`, `twilight`, `xcode`, `solarized_light`, `solarized_dark`
+  - 支持语言: `c_cpp`, `java`, `python`, `javascript`, `html`, `css`, `json`, `xml`, `ruby`, `php`, `go`, `swift`等
