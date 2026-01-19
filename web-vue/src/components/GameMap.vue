@@ -1,12 +1,14 @@
 <script setup>
 import { GameMap } from "../assets/scripts/GameMap";
 import { ref, onMounted } from "vue";
+import { usePkStore } from "../store/pk";
 
-let parent = ref(null);
-let canvas = ref(null);
+const parent = ref(null);
+const canvas = ref(null);
+const pkStore = usePkStore();
 
 onMounted(() => {
-  new GameMap(canvas.value.getContext("2d"), parent.value);
+  new GameMap(canvas.value.getContext("2d"), parent.value, pkStore.gamemap);
 });
 </script>
 

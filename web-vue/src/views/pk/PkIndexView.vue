@@ -19,11 +19,22 @@ onMounted(() => {
 
   socket.onopen = () => {
     console.log("connected");
+    pkStore.updateSocket(socket);
   };
 
   socket.onmessage = (msg) => {
     const data = JSON.parse(msg.data);
-    console.log(data);
+    if (data.event == "match-success") {
+      pkStore.updateOpponent({
+        username: data.opponent_username,
+        photo: data.opponent_photo,
+      });
+      pkStore.updateGamemap(data.gamemap);
+
+      setTimeout(() => {
+        pkStore.updateStatus("playing");
+      }, 2000);
+    }
   };
 
   socket.onclose = () => {
@@ -33,6 +44,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   socket.close();
+  pkStore.updateStatus("matching");
 });
 </script>
 

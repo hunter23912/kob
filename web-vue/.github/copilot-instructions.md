@@ -47,18 +47,24 @@ Quick, actionable notes to get an AI coding agent productive in this repo.
 - Network calls use `axios` with hardcoded `http://localhost:8080/...` endpoints in the store — treat these as tightly coupled to a Spring Boot backend.
   - If adding API work, consider centralizing axios (e.g., `src/services/axios.js`) but note current code uses direct calls.
 - Router guard: `src/router/index.js` uses a global `beforeEach` to redirect to login when `meta.requestAuth` is true and `useUserStore().is_login` is false.
+- Logout: Clears user data and removes `jwt_token` from `localStorage`.
 
 ## 7) Project conventions & patterns
 
 - Vue SFCs use `<script setup>` and **PascalCase** filenames (`GameMap.vue`, `PlayGround.vue`, `NavBar.vue`).
 - Small, direct modules in `src/assets/scripts/` (no build step for game code) — prefer adding small modules there for game logic.
 - Use the existing lifecycle (extend `AcGameObject`) rather than creating new animation loops.
+- Import style: Use `{}` for named exports, no braces for default exports (e.g., `import GameMap from './GameMap.vue'`).
+- Pinia stores use composition API style with `ref`, `computed`, and functions (see `src/store/user.js`).
+- Prefer `async/await` for API calls over `.then()` chains.
+- JS iteration: `for...of` for elements, `for...in` for indices.
 
 ## 8) Debugging & common gotchas 🔧
 
 - Canvas must be focused to receive keyboard input — losing focus is a frequent source of "controls not working" bugs.
 - Visual regressions usually stem from parent CSS affecting `update_size()` (check `PlayGround.vue` and component wrappers).
 - Use `console.log` inside `update()`/`start()` or set breakpoints in DevTools at `AcGameObject.step` and `GameMap.update()`.
+- Git rollback: `git reset --hard HEAD~1` for last commit, `git reset --hard <commit_id>` for specific, `git reflog` to view history.
 
 ## 9) PR guidance & safe edits ✅
 
