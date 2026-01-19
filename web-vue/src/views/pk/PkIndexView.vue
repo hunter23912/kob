@@ -4,6 +4,7 @@ import { onMounted, onUnmounted } from "vue";
 import { useUserStore } from "../../store/user.js";
 import { usePkStore } from "../../store/pk.js";
 import MatchGround from "../../components/MatchGround.vue";
+import ResultBoard from "../../components/ResultBoard.vue";
 
 const userStore = useUserStore();
 const pkStore = usePkStore();
@@ -29,11 +30,28 @@ onMounted(() => {
         username: data.opponent_username,
         photo: data.opponent_photo,
       });
-      pkStore.updateGamemap(data.gamemap);
+      pkStore.updateGame(data.game);
 
       setTimeout(() => {
         pkStore.updateStatus("playing");
-      }, 2000);
+      }, 200);
+    } else if (data.event == "move") {
+      const game_object = pkStore.gamemap_object;
+      const [playerA, playerB] = game_object.snakes;
+
+      playerA.set_direction(data.a_direction);
+      playerB.set_direction(data.b_direction);
+    } else if (data.event == "result") {
+      const game_object = pkStore.gamemap_object;
+      const [playerA, playerB] = game_object.snakes;
+
+      if (data.loser === "all" || data.loser === "A") {
+        playerA.status = "die";
+      }
+      if (data.loser === "all" || data.loser === "B") {
+        playerB.status = "die";
+      }
+      pkStore.updateLoser(data.loser);
     }
   };
 
@@ -51,6 +69,7 @@ onUnmounted(() => {
 <template>
   <PlayGround v-if="pkStore.status === 'playing'"></PlayGround>
   <MatchGround v-if="pkStore.status === 'matching'"></MatchGround>
+  <ResultBoard v-if="pkStore.loser !== 'none'"></ResultBoard>
 </template>
 
 <style scoped></style>

@@ -1,12 +1,26 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 
 export const usePkStore = defineStore("pk", () => {
   const socket = ref(null);
   const opponent_username = ref("");
   const opponent_photo = ref("");
   const status = ref("matching");
-  const gamemap = ref(null);
+  const gamemap_array = ref(null);
+  const players = reactive({
+    playerA: {
+      id: 0,
+      sx: 0,
+      sy: 0,
+    },
+    playerB: {
+      id: 0,
+      sx: 0,
+      sy: 0,
+    },
+  });
+  const gamemap_object = ref(null);
+  const loser = ref("none"); // none, all, A, B
 
   const updateSocket = (newSocket) => {
     socket.value = newSocket;
@@ -21,8 +35,22 @@ export const usePkStore = defineStore("pk", () => {
     status.value = newStatus;
   };
 
-  const updateGamemap = (newGamemap) => {
-    gamemap.value = newGamemap;
+  const updateGame = (newGame) => {
+    gamemap_array.value = newGame.map;
+    players.playerA.id = newGame.a_id;
+    players.playerA.sx = newGame.a_sx;
+    players.playerA.sy = newGame.a_sy;
+    players.playerB.id = newGame.b_id;
+    players.playerB.sx = newGame.b_sx;
+    players.playerB.sy = newGame.b_sy;
+  };
+
+  const updateGamemapObject = (newGamemapObject) => {
+    gamemap_object.value = newGamemapObject;
+  };
+
+  const updateLoser = (newLoser) => {
+    loser.value = newLoser;
   };
 
   return {
@@ -30,10 +58,15 @@ export const usePkStore = defineStore("pk", () => {
     opponent_username,
     opponent_photo,
     status,
-    gamemap,
+    gamemap_array,
+    players,
+    gamemap_object,
+    loser,
     updateSocket,
     updateOpponent,
     updateStatus,
-    updateGamemap,
+    updateGame,
+    updateGamemapObject,
+    updateLoser,
   };
 });

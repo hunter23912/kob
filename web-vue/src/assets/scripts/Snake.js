@@ -49,13 +49,8 @@ export class Snake extends AcGameObject {
 
   check_tail_increasing() {
     // 检测当前回合蛇的长度是否增加
-    if (this.step <= 10) {
-      return true;
-    } else if (this.step % 3 === 1) {
-      return true;
-    } else {
-      return false;
-    }
+    if (this.step <= 10) return true;
+    return this.step % 3 === 1;
   }
 
   next_step() {
@@ -74,10 +69,11 @@ export class Snake extends AcGameObject {
     //   this.cells[i] = JSON.parse(JSON.stringify(this.cells[i - 1])); // 深拷贝
     // }
 
-    if (!this.gamemap.check_valid(this.next_cell)) {
-      // 下一步撞墙或撞到自己，死亡
-      this.status = "die";
-    }
+    // 后端判断
+    // if (!this.gamemap.check_valid(this.next_cell)) {
+    //   // 下一步撞墙或撞到自己，死亡
+    //   this.status = "die";
+    // }
   }
 
   update_move() {
