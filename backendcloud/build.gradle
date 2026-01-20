@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    // 只声明版本，不立即应用到父项目
+    id 'org.springframework.boot' version '4.0.1' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
+}
+
+// 统一配置所有项目（包括父和子）
+allprojects {
+    group = 'com.kob'
+    version = '0.0.1-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+// 统一配置 Java 插件的项目（通常是所有子项目）
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+    // 在这里配置 Spring Cloud 的版本管理
+    dependencyManagement {
+        imports {
+            // 导入 Spring Cloud 的 BOM，子项目引用 cloud 组件就不用写版本号了
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.1.0"
+        }
+    }
+
+    dependencies {
+        // 这里可以放所有子项目通用的依赖，如 Lombok
+        compileOnly 'org.projectlombok:lombok:1.18.30'
+        annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    }
+}

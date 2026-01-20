@@ -1,0 +1,30 @@
+plugins {
+    id 'org.springframework.boot'
+    // 注意：java 和 dependency-management 插件已在父项目 subprojects 中应用，这里无需重复
+}
+
+dependencies {
+    // 1. Spring Boot Starter (由于父项目有版本管理，所有 starter 均无需写版本号)
+    implementation 'org.springframework.boot:spring-boot-starter-web' // 注意：原 webmvc 建议改为此通用 starter
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // 2. 数据库相关
+    // Spring Boot 默认管理了 mysql-connector-java 的版本，直接去掉版本号
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // 3. MyBatis Plus (Spring Boot 管理之外的第三方库，建议在父项目定义版本或在此写全)
+    implementation 'com.baomidou:mybatis-plus-spring-boot4-starter:3.5.16'
+    implementation 'com.baomidou:mybatis-plus-generator:3.5.16'
+
+    // 4. 其他工具类
+    implementation 'com.alibaba:fastjson:2.0.60'
+    implementation 'io.mongock:jwt-api:1.0.3'
+
+    // 5. 测试
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // 6. Lombok (已经在父项目 subprojects 中配置过了，子项目会自动继承，这里不需要再写)
+}

@@ -1,0 +1,21 @@
+plugins {
+    // 1. 继承父项目定义的 Spring Boot 插件版本
+    id 'org.springframework.boot'
+    // 2. 继承父项目的依赖管理插件（必须应用才能让父项目的 BOM 生效）
+    id 'io.spring.dependency-management'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // 引入 Cloud 组件，由于父项目有 mavenBom，这里无需写版本号
+//    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+//    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+bootJar {
+    enabled = true
+    archiveFileName = "${project.name}-${project.version}.jar"
+}
