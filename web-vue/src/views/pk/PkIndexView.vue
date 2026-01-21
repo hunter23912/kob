@@ -12,6 +12,7 @@ let socket = null;
 const socketUrl = `ws://localhost:8080/websocket/${userStore.token}`;
 
 onMounted(() => {
+  pkStore.updateLoser("none");
   pkStore.updateOpponent({
     username: "对手玩家",
     photo: "https://pica.zhimg.com/v2-061ff5e30cb0334a6b014fca715d8ac0_1440w.jpg",
