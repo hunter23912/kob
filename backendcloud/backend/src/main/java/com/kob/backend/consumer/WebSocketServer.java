@@ -77,12 +77,16 @@ public class WebSocketServer {
         }
     }
 
-    private void startGame(Integer aId, Integer bId) {
+    public static void startGame(Integer aId, Integer bId) {
         User a = userMapper.selectById(aId), b = userMapper.selectById(bId);
         Game game = new Game(15,15,20, a.getId(), b.getId());
         game.createMap();
-        users.get(a.getId()).game = game;
-        users.get(b.getId()).game = game;
+        if(users.get(a.getId()) != null) {
+            users.get(a.getId()).game = game;
+        }
+        if (users.get(b.getId()) != null) {
+            users.get(b.getId()).game = game;
+        }
         game.start(); // Game类继承自线程类，启动游戏线程
 
         JSONObject respGame = new JSONObject();
@@ -108,13 +112,15 @@ public class WebSocketServer {
         restTemplate.postForObject(addPlayerUrl, data, String.class);
     }
 
-    private void sendMatchResult(User user, User opponent, JSONObject respGame) {
+    private static void sendMatchResult(User user, User opponent, JSONObject respGame) {
         JSONObject respUser = new JSONObject();
         respUser.put("event", "match-success");
         respUser.put("opponent_username", opponent.getUsername());
         respUser.put("opponent_photo", opponent.getPhoto());
         respUser.put("game", respGame);
-        users.get(user.getId()).sendMessage(respUser.toJSONString()); // 发送给前端
+        if(users.get(user.getId()) != null) {
+            users.get(user.getId()).sendMessage(respUser.toJSONString()); // 发送给前端
+        }
     }
 
     private void stopMatching() {

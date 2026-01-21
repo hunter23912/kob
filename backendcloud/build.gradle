@@ -36,7 +36,7 @@ subprojects {
 
     dependencies {
         // 这里可以放所有子项目通用的依赖，如 Lombok
-        compileOnly 'org.projectlombok:lombok:1.18.30'
-        annotationProcessor 'org.projectlombok:lombok:1.18.30'
+        compileOnly 'org.projectlombok:lombok:1.18.42'
+        annotationProcessor 'org.projectlombok:lombok:1.18.42'
     }
 }
