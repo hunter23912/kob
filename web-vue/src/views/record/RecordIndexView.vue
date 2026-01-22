@@ -118,7 +118,7 @@ onMounted(() => {
 
 <template>
   <ContentField>
-    <table class="table table-primary table-striped table-hover">
+    <table class="table table-primary table-striped-columns table-hover">
       <thead>
         <tr>
           <th>用户A</th>
@@ -151,16 +151,17 @@ onMounted(() => {
     </table>
     <nav>
       <ul class="pagination" style="float: right">
+        <li class="page-item" @click="click_page(-4)">
+          <a class="page-link" href="#">
+            <span style="font-size: 0.9em">首页</span>
+          </a>
+        </li>
         <li class="page-item" @click="click_page(-2)">
           <a class="page-link" href="#">
             <span>&laquo;</span>
           </a>
         </li>
-        <li class="page-item" @click="click_page(-4)">
-          <a class="page-link" href="#">
-            <span>首页</span>
-          </a>
-        </li>
+
         <li
           :class="['page-item', page.is_active]"
           v-for="page in pages"
@@ -177,7 +178,7 @@ onMounted(() => {
         </li>
         <li class="page-item" @click="click_page(-3)">
           <a class="page-link" href="#">
-            <span>尾页</span>
+            <span style="font-size: 0.9em">尾页</span>
           </a>
         </li>
       </ul>
@@ -196,5 +197,9 @@ table {
   vertical-align: middle;
   outline: none;
   user-select: none;
+}
+
+thead th {
+  border-bottom: 3px solid black;
 }
 </style>

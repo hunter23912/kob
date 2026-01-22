@@ -26,4 +26,7 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
 }
+canvas {
+  outline: none;
+}
 </style>

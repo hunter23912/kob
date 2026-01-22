@@ -334,4 +334,12 @@ const update_bot = async (bot) => {
 .code-editor-head .language-btn {
   font-size: 0.8em;
 }
+
+table {
+  text-align: center;
+  vertical-align: middle;
+}
+thead th {
+  border-bottom: 3px solid black;
+}
 </style>
