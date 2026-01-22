@@ -1,6 +1,7 @@
 import { AcGameObject } from "./AcGameObject";
 import { Snake } from "./Snake";
 import { Wall } from "./Wall";
+import { useRecordStore } from "../../store/record";
 
 export class GameMap extends AcGameObject {
   constructor(ctx, parent, pkStore) {
@@ -9,7 +10,7 @@ export class GameMap extends AcGameObject {
     this.parent = parent;
     this.L = 0;
     this.pkStore = pkStore;
-
+    this.recordStore = useRecordStore();
     this.rows = 15;
     this.cols = 15;
 
@@ -36,24 +37,48 @@ export class GameMap extends AcGameObject {
   }
 
   add_listening_events() {
-    this.ctx.canvas.focus();
+    if (this.recordStore.is_record) {
+      let k = 0;
+      const a_steps = this.recordStore.steps.a_steps;
+      const b_steps = this.recordStore.steps.b_steps;
+      const loser = this.recordStore.record_loser;
+      const [snake0, snake1] = this.snakes;
 
-    this.ctx.canvas.addEventListener("keydown", (e) => {
-      let d = -1;
-      if (e.key === "w") d = 0;
-      else if (e.key === "d") d = 1;
-      else if (e.key === "s") d = 2;
-      else if (e.key === "a") d = 3;
+      const interval_id = setInterval(() => {
+        if (k >= a_steps.length - 1) {
+          if (loser === "all" || loser === "A") {
+            snake0.status = "die";
+          }
+          if (loser === "all" || loser === "B") {
+            snake1.status = "die";
+          }
+          clearInterval(interval_id);
+        } else {
+          snake0.set_direction(parseInt(a_steps[k]));
+          snake1.set_direction(parseInt(b_steps[k]));
+        }
+        k++;
+      }, 300);
+    } else {
+      this.ctx.canvas.focus();
 
-      if (d >= 0) {
-        this.pkStore.socket.send(
-          JSON.stringify({
-            event: "move",
-            direction: d,
-          }),
-        );
-      }
-    });
+      this.ctx.canvas.addEventListener("keydown", (e) => {
+        let d = -1;
+        if (e.key === "w") d = 0;
+        else if (e.key === "d") d = 1;
+        else if (e.key === "s") d = 2;
+        else if (e.key === "a") d = 3;
+
+        if (d >= 0) {
+          this.pkStore.socket.send(
+            JSON.stringify({
+              event: "move",
+              direction: d,
+            }),
+          );
+        }
+      });
+    }
   }
 
   start() {

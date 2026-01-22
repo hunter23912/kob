@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.kob.backend.consumer.WebSocketServer;
 import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.Record;
+import com.kob.backend.pojo.User;
 import lombok.Getter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -184,7 +185,6 @@ public class Game extends Thread{
 
     private boolean check_valid(List<Cell> cellsA, List<Cell> cellsB) { // 判断某名玩家的操作是否合法
         int n = cellsA.size();
-        int m = cellsB.size();
         Cell cell = cellsA.get(n - 1); // 玩家下一步操作后，蛇头所在的位置
         if(g[cell.x][cell.y] == 1) return false; // 撞墙
 
@@ -193,8 +193,7 @@ public class Game extends Thread{
             if (cell.x == t.x && cell.y == t.y) return false; // 撞到自己
         }
 
-        for (int i = 0; i < m; i++) { // 这里要判断对方的蛇头
-            Cell t = cellsB.get(i);
+        for (Cell t : cellsB) { // 这里要判断对方的蛇头
             if (cell.x == t.x && cell.y == t.y) return false; // 撞到对方
         }
         return true;
@@ -251,7 +250,31 @@ public class Game extends Thread{
         return res.toString();
     }
 
+    private void updateUserRating(Player player, Integer rating) {
+        // 另一种更高效的更新方式
+        User user = new User();
+        user.setId(player.getId());
+        user.setRating(rating);
+        // User user = WebSocketServer.userMapper.selectById(player.getId());
+        // user.setRating(rating);
+        WebSocketServer.userMapper.updateById(user);
+    }
+
     private void saveToDatabase() {
+        Integer ratingA = WebSocketServer.userMapper.selectById(playerA.getId()).getRating();
+        Integer ratingB = WebSocketServer.userMapper.selectById(playerB.getId()).getRating();
+
+        if ("A".equals(loser)) {
+            ratingA -= 2;
+            ratingB += 5;
+        } else if ("B".equals(loser)) {
+            ratingA += 5;
+            ratingB -= 2;
+        }
+
+        updateUserRating(playerA, ratingA);
+        updateUserRating(playerB, ratingB);
+
         Record record = new Record (
             null,
             playerA.getId(),

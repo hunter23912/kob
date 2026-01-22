@@ -26,16 +26,9 @@ subprojects {
         }
     }
 
-    // 在这里配置 Spring Cloud 的版本管理
-    dependencyManagement {
-        imports {
-            // 导入 Spring Cloud 的 BOM，子项目引用 cloud 组件就不用写版本号了
-            mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.1.0"
-        }
-    }
-
     dependencies {
         // 这里可以放所有子项目通用的依赖，如 Lombok
+        implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2025.1.0"))
         compileOnly 'org.projectlombok:lombok:1.18.42'
         annotationProcessor 'org.projectlombok:lombok:1.18.42'
     }

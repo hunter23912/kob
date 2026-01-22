@@ -3,18 +3,15 @@ import PlayGround from "../../components/PlayGround.vue";
 import { onMounted, onUnmounted } from "vue";
 import { useUserStore } from "../../store/user.js";
 import { usePkStore } from "../../store/pk.js";
-import { useRecordStore } from "../../store/record.js";
 import MatchGround from "../../components/MatchGround.vue";
 import ResultBoard from "../../components/ResultBoard.vue";
 
 const userStore = useUserStore();
 const pkStore = usePkStore();
-const recordStore = useRecordStore();
 let socket = null;
 const socketUrl = `ws://localhost:8080/websocket/${userStore.token}`;
 
 onMounted(() => {
-  recordStore.updateIsRecord(false);
   pkStore.updateLoser("none");
   pkStore.updateOpponent({
     username: "对手玩家",
@@ -71,9 +68,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <PlayGround v-if="pkStore.status === 'playing'"></PlayGround>
-  <MatchGround v-if="pkStore.status === 'matching'"></MatchGround>
-  <ResultBoard v-if="pkStore.loser !== 'none'"></ResultBoard>
+  <PlayGround></PlayGround>
 </template>
 
 <style scoped></style>
