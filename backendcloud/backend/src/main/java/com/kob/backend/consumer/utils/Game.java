@@ -144,7 +144,6 @@ public class Game extends Thread{
     }
 
     private void sendBotCode(Player player) {
-//        System.out.println("in send BotCode from nextStep, current player id: " + player.getId() + ", botId: " + player.getBotId());
         if (player.getBotId().equals(-1)) return; // 人工操作不需要发送代码
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("user_id", player.getId().toString());
@@ -185,15 +184,16 @@ public class Game extends Thread{
 
     private boolean check_valid(List<Cell> cellsA, List<Cell> cellsB) { // 判断某名玩家的操作是否合法
         int n = cellsA.size();
+        int m = cellsB.size();
         Cell cell = cellsA.get(n - 1); // 玩家下一步操作后，蛇头所在的位置
         if(g[cell.x][cell.y] == 1) return false; // 撞墙
 
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 0; i < n - 1; i++) { // 排除蛇头
             Cell t = cellsA.get(i);
             if (cell.x == t.x && cell.y == t.y) return false; // 撞到自己
         }
 
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 0; i < m; i++) { // 这里要判断对方的蛇头
             Cell t = cellsB.get(i);
             if (cell.x == t.x && cell.y == t.y) return false; // 撞到对方
         }
@@ -301,6 +301,11 @@ public class Game extends Thread{
                     }
                 } finally {
                     lock.unlock();
+                }
+                try {
+                    Thread.sleep(200); // 等待200ms，保证前端能够收到最后的move消息
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
                 sendResult();
                 break;

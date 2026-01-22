@@ -34,7 +34,7 @@ public class Player {
             x += dx[d];
             y += dy[d];
             res.add(new Cell(x, y));
-            if(check_tail_increasing(++step)) {
+            if(!check_tail_increasing(++step)) {
                 res.removeFirst();
             }
         }
