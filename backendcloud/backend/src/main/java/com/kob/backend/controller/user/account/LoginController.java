@@ -11,7 +11,7 @@ public class LoginController {
     @Autowired // 自动注入 LoginService 的实现类
     private LoginService loginService;
 
-    @PostMapping("/user/account/token/")
+    @PostMapping("/api/user/account/token/")
     public Map<String, String> getToken(@RequestBody Map<String, String> map) {
         String username = map.get("username");
         String password = map.get("password");

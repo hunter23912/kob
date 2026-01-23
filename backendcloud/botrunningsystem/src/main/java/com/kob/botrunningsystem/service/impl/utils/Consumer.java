@@ -1,6 +1,5 @@
 package com.kob.botrunningsystem.service.impl.utils;
 
-import com.kob.botrunningsystem.utils.BotInterface;
 import org.joor.Reflect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,9 +8,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 @Component
 public class Consumer extends Thread{
@@ -40,7 +43,7 @@ public class Consumer extends Thread{
     }
 
     private String addUuid(String code, String uid) { // 在code中的Bot类名后添加uid
-        int k = code.indexOf(" implements com.kob.botrunningsystem.utils.BotInterface");
+        int k = code.indexOf(" implements java.util.function.Supplier<Integer>");
         return code.substring(0, k) + uid + code.substring(k);
 
     }
@@ -52,28 +55,40 @@ public class Consumer extends Thread{
             String code = bot.getBotCode();
             String codeHash = DigestUtils.md5DigestAsHex(code.getBytes());
 
-            BotInterface botInterface;
-
+            Supplier<Integer> botInterface;
+            Class<?> clazz; // 用来接收编译后的Bot123类
             // 2. 检查缓存
             if (cache.containsKey(codeHash)) {
                 // 如果缓存命中，直接通过反射创建实例（耗时几乎为 0）
-                botInterface = (BotInterface) cache.get(codeHash).getDeclaredConstructor().newInstance();
+                clazz = cache.get(codeHash);
             } else {
                 // 如果缓存未命中，进行重型编译操作
                 UUID uuid = UUID.randomUUID();
-                String uid = uuid.toString().substring(0, 8);
 
-                Class<?> clazz = Reflect.compile(
-                        "com.kob.botrunningsystem.utils.Bot" + uid,
-                        addUuid(code, uid)
+                String uid = uuid.toString().substring(0, 8);
+                String fullClassName = "com.kob.botrunningsystem.utils.Bot" + uid;
+
+                String processCode = addUuid(code, uid);
+
+                clazz = Reflect.compile(
+                        fullClassName,
+                        processCode
                 ).type(); // 获取编译后的 Class 类型
 
                 cache.put(codeHash, clazz); // 存入缓存
-                botInterface = (BotInterface) clazz.getDeclaredConstructor().newInstance();
             }
+            botInterface = (Supplier<Integer>) clazz.getDeclaredConstructor().newInstance();
 
+            // 将输入传入到一个文件中，支持多语言脚本
+            File file = new File("input.txt");
+            try(PrintWriter fout = new PrintWriter(file)) {
+                fout.println(bot.getInput());
+                fout.flush(); // 将内存缓冲区的数据强制写入到磁盘文件input.txt中
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             // 3. 执行逻辑
-            Integer direction = botInterface.nextMove(bot.getInput());
+            Integer direction = botInterface.get();
 
             System.out.println("move: user: " + bot.getUserId() + " direction: " + direction);
             MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
@@ -87,25 +102,4 @@ public class Consumer extends Thread{
             e.printStackTrace();
         }
     }
-
-    /* 旧版，不带缓存
-    @Override
-    public void run1() {
-        UUID uuid = UUID.randomUUID();
-        String uid = uuid.toString().substring(0, 8);
-        BotInterface botInterface = Reflect.compile(
-                "com.kob.botrunningsystem.utils.Bot" + uid,
-                addUuid(bot.getBotCode(), uid)
-        ).create().get();
-
-        Integer direction = botInterface.nextMove(bot.getInput());
-
-        System.out.println("move: user: " + bot.getUserId() + " direction: " + direction);
-        MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
-        data.add("user_id", bot.getUserId().toString());
-        data.add("direction", direction.toString());
-
-        restTemplate.postForObject(receiveBotMoveUrl, data, String.class);
-    }
-    */
 }

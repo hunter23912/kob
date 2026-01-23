@@ -22,7 +22,7 @@ const selectLanguage = (bot, lang) => {
 
 const refresh_bots = async () => {
   try {
-    const resp = await axios.get("http://localhost:8080/user/bot/getlist/", {
+    const resp = await axios.get("http://localhost:8080/api/user/bot/getlist/", {
       headers: {
         Authorization: `Bearer ${userStore.token}`,
       },
@@ -51,7 +51,7 @@ const botadd = reactive({
 const add_bot = async () => {
   try {
     const resp = await axios.post(
-      "http://localhost:8080/user/bot/add/",
+      "http://localhost:8080/api/user/bot/add/",
       {
         title: botadd.title,
         description: botadd.description,
@@ -81,7 +81,7 @@ const add_bot = async () => {
 
 const remove_bot = async (bot) => {
   const resp = await axios.post(
-    "http://localhost:8080/user/bot/remove/",
+    "http://localhost:8080/api/user/bot/remove/",
     {
       bot_id: bot.id,
     },
@@ -100,7 +100,7 @@ const remove_bot = async (bot) => {
 
 const update_bot = async (bot) => {
   const resp = await axios.post(
-    "http://localhost:8080/user/bot/update/",
+    "http://localhost:8080/api/user/bot/update/",
     {
       bot_id: bot.id,
       title: bot.title,
@@ -246,7 +246,7 @@ const update_bot = async (bot) => {
                           </div>
                           <div class="modal-body">
                             <!-- 一个form结构 -->
-                            <div class="mb-3">
+                            <div class="mb-3 bot-title">
                               <label for="update-bot-title" class="form-label">名称</label>
                               <input
                                 v-model="bot.title"
@@ -256,7 +256,7 @@ const update_bot = async (bot) => {
                                 placeholder="请输入Bot名称"
                               />
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3 bot-description">
                               <label for="update-bot-description" class="form-label">简介</label>
                               <textarea
                                 v-model="bot.description"
@@ -267,7 +267,7 @@ const update_bot = async (bot) => {
                               ></textarea>
                             </div>
                             <div class="mb-3">
-                              <div class="code-editor-head" style="">
+                              <div class="code-editor-head">
                                 <label class="form-label">代码</label>
                                 <div class="btn-group">
                                   <button
@@ -339,6 +339,12 @@ table {
   text-align: center;
   vertical-align: middle;
 }
+
+.bot-title,
+.bot-description {
+  text-align: left;
+}
+
 thead th {
   border-bottom: 3px solid black;
 }

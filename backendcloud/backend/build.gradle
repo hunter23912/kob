@@ -29,3 +29,15 @@ dependencies {
 
     // 6. Lombok (已经在父项目 subprojects 中配置过了，子项目会自动继承，这里不需要再写)
 }
+
+// 配置可执行Jar包的名称和主类
+bootJar {
+    enabled = true
+    archiveBaseName = "${project.name}-${project.version}.jar"
+    mainClass = 'com.kob.backend.BackendApplication'
+}
+
+// 禁用不能运行的普通Jar打包
+jar {
+    enabled = false
+}

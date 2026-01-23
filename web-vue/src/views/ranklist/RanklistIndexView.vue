@@ -14,16 +14,19 @@ const pages = ref([]);
 
 // 点击页码
 const click_page = (page) => {
+  // 传入页码数
   if (page === -2) {
     page = current_page - 1;
   } else if (page === -1) {
     page = current_page + 1;
   } else if (page === -4) {
+    // 首页
     page = 1;
   } else if (page === -3) {
-    page = parseInt(Math.ceil(total_users / 3));
+    // 尾页
+    page = parseInt(Math.ceil(total_users / 10));
   }
-  let max_pages = parseInt(Math.ceil(total_users / 3));
+  let max_pages = parseInt(Math.ceil(total_users / 10));
 
   if (page >= 1 && page <= max_pages) {
     current_page = page;
@@ -32,7 +35,7 @@ const click_page = (page) => {
 };
 
 const update_pages = () => {
-  let max_pages = parseInt(Math.ceil(total_users / 3));
+  let max_pages = parseInt(Math.ceil(total_users / 10));
   let new_pages = [];
   for (let i = current_page - 2; i <= current_page + 2; i++) {
     // 显示当前页前后各两页
@@ -48,8 +51,9 @@ const update_pages = () => {
 
 // 向后端获取用户列表
 const pull_page = async (page) => {
+  // 传入页码数
   current_page = page;
-  const resp = await axios.get("http://localhost:8080/ranklist/getlist/", {
+  const resp = await axios.get("http://localhost:8080/api/ranklist/getlist/", {
     params: {
       page,
     },

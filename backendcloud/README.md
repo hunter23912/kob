@@ -122,3 +122,96 @@ graph TD
     style BP fill:#e1f5fe,stroke:#01579b
     style BRS fill:#fff9c4,stroke:#fbc02d
 ```
+
+### 项目上线基本流程
+#### 在服务器上执行的步骤
+```bash
+# 下载镜像
+docker load -i springboot-app.tar
+
+# 运行容器，443是https端口，80是http端口，8080是springboot端口，8081是websocket端口，8082是bot运行系统端口，20000是ssh远程连接端口
+docker run -p 20000:22 -p 443:443 -p 80:80 -p 8080:8080 -p 8081:8081 -p 8082:8082 --name springboot-app -itd --name kob_server springboot-app
+
+# 进入容器
+docker attach springboot-app
+
+# 创建用户
+adduser wjh # 修改用户密码
+
+# 为用户添加sudo权限
+usermod -aG sudo wjh
+
+# 挂载容器
+ctrl+p+q # 退出容器但不停止,关闭容器是ctrl + d
+```
+
+#### 本地配置下容器的免密登录
+```bash
+cd .ssh
+# windows直接
+ssh-keygen.exe
+# linux或mac
+ssh-keygen -t rsa # (t表示type)
+
+vim config
+Host springboot_server
+    HostName 你的服务器IP地址
+    User wjh
+    
+Host springboot
+    HostName 同样的服务器IP地址
+    User wjh
+    Port 20000
+
+# 将公钥传到服务器
+ssh-copy-id springboot:
+
+# 一般将最常用的三个配置文件传到服务器即可：
+scp .bashrc .vimrc .tmux.conf springboot:
+```
+#### 服务器安装mysql
+```bash
+apt update
+apt isntall mysql-server
+service mysql start
+# 看top后应该有mysqld和mysqld_safe两个进程
+
+mysql -u root
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'wjh123456';
+#  给所有权限
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+```
+#### 本地连接远程数据库
+```bash
+mysql -u root -pwjh123456 # 或
+mysql -u root -p -h 你的服务器IP地址
+
+# 创建数据库操作
+将本地的db创建语句DDL复制到服务器上的一个sql文件中，然后执行
+mysql -u root -pwjh123456 < create_table.sql
+# 或者在数据库中执行
+mysql> source /home/wjh/create_table.sql;
+```
+
+#### 安装java环境
+```bash
+apt install openjdk-21-jdk
+java -version
+```
+#### nginx几种部署方式
+```bash
+# 在/etc/nginx/conf.d/下新建一个配置文件 kob_server.conf
+vim /etc/nginx/conf.d/kob_server.conf
+# 然后执行
+/etc/init.d/nginx restart # 彻底重载
+/etc/init.d/nginx reload # 平滑重载
+
+# 或者
+systemctl restart nginx
+systemctl reload nginx
+
+# 通常启动失败的报错日志在这里
+vim /var/log/nginx/error.log
+```
+> 一般，在docker中部署项目，启动nginx即可，如果是

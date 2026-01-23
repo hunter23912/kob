@@ -74,6 +74,19 @@ onUnmounted(() => {
   <PlayGround v-if="pkStore.status === 'playing'"></PlayGround>
   <MatchGround v-if="pkStore.status === 'matching'"></MatchGround>
   <ResultBoard v-if="pkStore.loser !== 'none'"></ResultBoard>
+  <div class="user-color" v-if="pkStore.status === 'playing' && parseInt(userStore.id) === pkStore.players.playerA.id">
+    左下角
+  </div>
+  <div class="user-color" v-if="pkStore.status === 'playing' && parseInt(userStore.id) === pkStore.players.playerB.id">
+    右上角
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+div.user-color {
+  text-align: center;
+  color: white;
+  font-size: 2em;
+  font-weight: bold;
+}
+</style>

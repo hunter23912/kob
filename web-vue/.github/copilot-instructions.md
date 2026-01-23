@@ -2,91 +2,61 @@
 
 Quick, actionable notes to get an AI coding agent productive in this repo.
 
-## 1) High-level overview
+## Quick start ✅
 
-- Single-page frontend built with **Vue 3** + **Vite**. App entry: `src/main.js`, root component: `App.vue`.
-- The core feature is a canvas-based 2-player snake game (player-vs-player). Game logic lives under `src/assets/scripts/` and is composed with Vue components under `src/components/`.
-- Real-time multiplayer is implemented using a WebSocket connection to a Spring Boot backend (`ws://localhost:8080/websocket/{token}`) and REST calls via `axios` to `http://localhost:8080/...`.
-- Notable routes: `/pk/` (match & play), `/record/`, `/ranklist/`, `/user/bot/`.
-- No automated tests or CI configured. Use `pnpm` (preferred) — see `pnpm-lock.yaml`.
+- Install: `pnpm install` (fallback `npm install`)
+- Dev: `pnpm dev` (Vite, default port 5173). Build: `pnpm build`. Preview: `pnpm preview`.
+- Backend: API base is `http://localhost:8080`. WebSocket URL: `ws://localhost:8080/websocket/${token}`.
 
-## 2) Useful commands (run from project root)
+## Architecture & key files 🔧
 
-- Install deps: `pnpm install` (fallback `npm install`)
-- Start dev server: `pnpm dev` (Vite, default port 5173)
-- Build: `pnpm build`
-- Preview production build: `pnpm preview`
+- Frontend: Vue 3 + Vite. Entry: `src/main.js`, root: `App.vue`.
+- Core feature: 2-player canvas snake game.
+  - Engine: `src/assets/scripts/AcGameObject.js` (global registry `AC_GAME_OBJECTS`). Extend `AcGameObject` and implement `start()` and `update()`; DO NOT create parallel animation loops.
+  - Game scripts: `src/assets/scripts/{GameMap, Snake, Wall, Cell}.js`.
+  - UI glue: `src/components/GameMap.vue`, view: `src/views/pk/PkIndexView.vue`.
+- Stores & networking: Pinia stores live in `src/store/` (`user.js`, `pk.js`, `record.js`). `pk` store holds socket state and `gamemap_object`.
 
-## 3) Engine & lifecycle (very important)
+## WebSocket schema (examples) 📡
 
-- Central loop: `src/assets/scripts/AcGameObject.js` implements a global registry (`AC_GAME_OBJECTS`) and a single `requestAnimationFrame` step.
-  - Game objects should extend `AcGameObject` and implement `start()` (runs once) and `update()` (runs each frame). Optional: `destroy()` / `on_destroy()`.
-  - Game objects are registered automatically when constructed — avoid creating parallel animation loops.
-- Debugging tip: set breakpoints in `AcGameObject.step` and object `update()` methods to inspect `timedelta` and frame flow.
+- Outgoing move: `{ player_id, event: 'move', direction }`
+- Incoming messages:
+  - `match-success`: `{ event:'match-success', opponent_username, opponent_photo, game }`
+  - `move`: `{ event:'move', a_direction, b_direction }`
+  - `result`: `{ event:'result', ... }`
 
-## 4) Canvas, sizing, and keyboard input
+## Conventions & patterns 🧭
 
-- `GameMap` (class: `src/assets/scripts/GameMap.js`; wrapper: `src/components/GameMap.vue`) controls canvas rendering, sizing, and input.
-  - `update_size()` computes tile size `L` from `parent.clientWidth` / `parent.clientHeight` and adjusts `canvas.width` / `canvas.height`.
-  - Layout/CSS changes to parent containers (e.g., `PlayGround.vue` uses `height: 75vh`) directly affect visuals and `L`.
-- Keyboard handling:
-  - Canvas is focusable via `tabindex="0"` and focused with `ctx.canvas.focus()` in `GameMap.add_listening_events()`.
-  - Input mapping: Player 0 uses `w/a/s/d`; Player 1 uses arrow keys.
-  - Sending moves: `GameMap.add_listening_events()` sends `{ player_id, event: 'move', direction }` over the `pkStore.socket`.
+- Components: `<script setup>`, PascalCase filenames.
+- Stores: Pinia composition-style (refs/reactive + returned functions).
+- Network code: prefer `async/await`.
+- Canvas sizing: `GameMap.update_size()` computes tile `L` from parent size—CSS/layout changes affect visuals.
 
-## 5) WebSocket & message schema ✅
+## Known issues & quick fixes ⚠️
 
-- WebSocket is opened in `src/views/pk/PkIndexView.vue`:
-  - URL: `ws://localhost:8080/websocket/${userStore.token}`
-  - Incoming events handled: `match-success`, `move`, `result`.
-- Message examples:
-  - Incoming `match-success`: { event: 'match-success', opponent_username, opponent_photo, game }
-  - Incoming `move`: { event: 'move', a_direction, b_direction }
-  - Outgoing `move` (from `GameMap`): { player_id, event: 'move', direction }
-- Where the `GameMap` instance is stored: `src/components/GameMap.vue` calls `pkStore.updateGamemapObject(new GameMap(...))`. The store exposes `gamemap_object` so other code (e.g., socket handlers) can access `game_object.snakes`.
+- Missing `userStore` import in `src/assets/scripts/GameMap.js`. Fix by adding:
 
-## 6) State, auth & backend integration
+```javascript
+import { useUserStore } from "../../store/user.js";
+const userStore = useUserStore();
+```
 
-- Auth is in `src/store/user.js` (Pinia): `id`, `token`, `is_login`, `autoLogin()`, `getInfo()` and JWT storage in `localStorage` as `jwt_token`.
-- REST calls use hardcoded base URLs (http://localhost:8080). If you refactor, update all `axios` calls in stores/components.
-- Router guard (`src/router/index.js`) requires `meta.requestAuth` and checks `useUserStore().is_login`.
+- Race: ensure `pkStore.updateGamemapObject(...)` runs before socket handlers access `pkStore.gamemap_object`.
+- Canvas focus: losing focus stops input; re-focus canvas or call `ctx.canvas.focus()` when showing the game.
 
-## 7) Project conventions & patterns
+## Debugging & testing tips 🔍
 
-- Components use `<script setup>` and **PascalCase** file names.
-- Game scripts live under `src/assets/scripts/` and are intentionally simple—add small modules there for gameplay code.
-- Pinia stores use the composition-style API (refs/reactive + returned functions).
-- Prefer `async/await` for network calls, `for...of` to iterate arrays.
-
-## 8) Known issues & small fixes to watch for ⚠️
-
-- Missing `userStore` reference in `src/assets/scripts/GameMap.js`:
-  - `add_listening_events()` sends `{ player_id: userStore.id, ... }` but `userStore` is not imported there — this causes a runtime ReferenceError. Fix by importing and using the store, e.g.:
-
-    ```javascript
-    import { useUserStore } from "../../store/user.js";
-    // inside add_listening_events or constructor
-    const userStore = useUserStore();
-    ```
-
-- Ensure `pkStore.updateGamemapObject(...)` is called before socket messages try to access `pkStore.gamemap_object` (race conditions can happen on very fast message flows).
-- Canvas focus: losing focus will stop input; tests / manual QA should include re-focusing verification.
-
-## 9) Debugging & testing tips 🔧
-
-- To inspect real-time events, set breakpoints in `PkIndexView.vue` (`socket.onmessage`) and in `GameMap.add_listening_events()` for outgoing messages.
-- Manual tests to validate after changes:
+- Breakpoints: `AcGameObject.step`, `GameMap.update()`, `PkIndexView.vue socket.onmessage`, `GameMap.add_listening_events()`.
+- Manual test flow:
   1. Start backend + frontend.
-  2. Login, open `/pk/`, ensure socket connects (`connected` log appears).
-  3. Confirm `match-success` triggers `pkStore.updateGame()` and game transitions to `playing`.
-  4. Verify `move` events are sent/received and both snakes update direction.
+  2. Login, open `/pk/`, confirm WebSocket connected.
+  3. Trigger `match-success`, play, verify `move` events update both snakes.
 
-## 10) PR & maintenance guidance ✅
+## PR checklist ✅
 
-- Preserve `AcGameObject` lifecycle; avoid adding competing game loops.
-- When changing layouts, check `GameMap.update_size()` visually across screen sizes.
-- If modifying WebSocket or game message formats, update `PkIndexView.vue` and `GameMap.add_listening_events()` together and include a short manual test plan in the PR description.
+- Preserve `AcGameObject` lifecycle; avoid extra `requestAnimationFrame` loops.
+- When changing message formats or socket logic, update both `PkIndexView.vue` and `GameMap.add_listening_events()` and include a short manual test plan in the PR description.
 
 ---
 
-If you'd like, I can apply the small code fix for the `userStore` reference and add a short developer checklist to `README.md` — tell me which you'd prefer and I'll open a PR. 💡
+If you'd like, I can apply the `userStore` import fix or directly update the original `.github/copilot-instructions.md` with this concise version—tell me which and I'll open a PR.

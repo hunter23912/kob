@@ -13,7 +13,14 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
+// 配置可执行Jar包的名称和主类
 bootJar {
     enabled = true
-    archiveFileName = "${project.name}-${project.version}.jar"
+    archiveBaseName = "${project.name}-${project.version}.jar"
+    mainClass = 'com.kob.backend.MatchingSystemApplication'
+}
+
+// 禁用不能运行的普通Jar打包
+jar {
+    enabled = false
 }
