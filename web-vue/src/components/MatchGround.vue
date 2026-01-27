@@ -34,7 +34,7 @@ const click_match_btn = () => {
 
 const refresh_bots = async () => {
   try {
-    const resp = await axios.get("http://localhost:8080/api/user/bot/getlist/", {
+    const resp = await axios.get("/api/user/bot/getlist/", {
       headers: {
         Authorization: `Bearer ${userStore.token}`,
       },

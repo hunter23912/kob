@@ -24,9 +24,7 @@ public class SecurityConfig {
 
                         // 2. 针对匹配系统的接口进行 IP 限制
                         // 注意：由于你的 Controller 路径带了末尾斜杠，这里也要对应上，或者用 /**
-                        .requestMatchers("/bot/add/").access(
-                                new WebExpressionAuthorizationManager("hasIpAddress('127.0.0.1') or hasIpAddress('::1')")
-                        )
+                        .requestMatchers("/bot/add/").permitAll()
 
                         // 3. 其他所有请求（包括你直接访问 localhost:8081）都会被拒绝
                         // 这符合微服务安全原则：只暴露必要的接口

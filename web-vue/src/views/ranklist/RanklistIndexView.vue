@@ -53,7 +53,7 @@ const update_pages = () => {
 const pull_page = async (page) => {
   // 传入页码数
   current_page = page;
-  const resp = await axios.get("http://localhost:8080/api/ranklist/getlist/", {
+  const resp = await axios.get("/api/ranklist/getlist/", {
     params: {
       page,
     },

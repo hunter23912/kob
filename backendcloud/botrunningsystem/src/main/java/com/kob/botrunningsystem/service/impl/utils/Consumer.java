@@ -2,6 +2,7 @@ package com.kob.botrunningsystem.service.impl.utils;
 
 import org.joor.Reflect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -20,9 +21,15 @@ import java.util.function.Supplier;
 public class Consumer extends Thread{
     private Bot bot;
     private static RestTemplate restTemplate;
-    private static final String receiveBotMoveUrl = "http://127.0.0.1:8080/pk/receive/bot/move/";
+
+    private static String receiveBotMoveUrl;
 
     private static final Map<String, Class<?>> cache = new ConcurrentHashMap<>();
+
+    @Value("${game.url.botmove}")
+    public void setReceiveBotMoveUrl(String url) {
+        Consumer.receiveBotMoveUrl = url;
+    }
 
     @Autowired
     public void setRestTemplate(RestTemplate restTemplate) {

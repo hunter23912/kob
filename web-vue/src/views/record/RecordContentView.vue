@@ -9,7 +9,7 @@ import ResultBoard from "../../components/ResultBoard.vue";
 const userStore = useUserStore();
 const pkStore = usePkStore();
 let socket = null;
-const socketUrl = `ws://localhost:8080/websocket/${userStore.token}`;
+const socketUrl = `/websocket/${userStore.token}`;
 
 onMounted(() => {
   pkStore.updateLoser("none");

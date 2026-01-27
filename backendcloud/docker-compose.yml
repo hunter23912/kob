@@ -1,0 +1,35 @@
+services:
+  kob-backend:
+    image: eclipse-temurin:21-jdk-alpine
+    container_name: kob-backend
+    volumes:
+      - ./backend.jar:/app/app.jar
+    working_dir: /app
+    command: java -Xmx512m -Xms256m -jar app.jar
+    ports:
+      - "8080:8080"
+    restart: always
+
+  kob-matchsystem:
+    image: eclipse-temurin:21-jdk-alpine
+    container_name: kob-matchsystem
+    volumes:
+      - ./matchsystem.jar:/app/app.jar
+    working_dir: /app
+    command: java -Xmx256m -Xms128m -jar app.jar
+    # 假设匹配系统跑在 3001
+    ports:
+      - "8081:8081"
+    restart: always
+
+  kob-botrunningsystem:
+    image: eclipse-temurin:21-jdk-alpine
+    container_name: kob-botrunningsystem
+    volumes:
+      - ./botrunningsystem.jar:/app/app.jar
+    working_dir: /app
+    # BotRunningSystem 需要 JDK 进行动态编译，此镜像已包含
+    command: java -Xmx256m -Xms128m -jar app.jar
+    ports:
+      - "8082:8082"
+    restart: always

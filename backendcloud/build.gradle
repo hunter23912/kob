@@ -33,3 +33,7 @@ subprojects {
         annotationProcessor 'org.projectlombok:lombok:1.18.42'
     }
 }
+
+tasks.named('jar') {
+    enabled = false
+}

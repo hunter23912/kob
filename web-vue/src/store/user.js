@@ -21,7 +21,7 @@ export const useUserStore = defineStore("user", () => {
 
   const login = async (data) => {
     try {
-      const loginResp = await axios.post("http://localhost:8080/api/user/account/token/", {
+      const loginResp = await axios.post("/api/user/account/token/", {
         username: data.username,
         password: data.password,
       });
@@ -59,7 +59,7 @@ export const useUserStore = defineStore("user", () => {
 
   const getInfo = async (data) => {
     try {
-      const geInfoResp = await axios.get("http://localhost:8080/api/user/account/info/", {
+      const geInfoResp = await axios.get("/api/user/account/info/", {
         headers: {
           Authorization: `Bearer ${token.value}`,
         },

@@ -33,7 +33,7 @@ dependencies {
 // 配置可执行Jar包的名称和主类
 bootJar {
     enabled = true
-    archiveBaseName = "${project.name}-${project.version}.jar"
+//    archiveBaseName = "${project.name}.jar"
     mainClass = 'com.kob.backend.BackendApplication'
 }
 

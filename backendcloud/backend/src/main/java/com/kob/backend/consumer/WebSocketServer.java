@@ -12,6 +12,7 @@ import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -37,9 +38,25 @@ public class WebSocketServer {
     public static RestTemplate restTemplate;
 
     public Game game = null;
-    private static final String addPlayerUrl = "http://localhost:8081/player/add/";
-    private static final String removePlayerUrl = "http://localhost:8081/player/remove/";
 
+    private static  String addPlayerUrl;
+    private static  String removePlayerUrl;
+    public static String addBotUrl;
+
+    @Value("${botrunning.url.add}")
+    public void setddBotUrl(String url) {
+        WebSocketServer.addBotUrl = url;
+    }
+
+    @Value("${matching.url.add}")
+    public void setAddPlayerUrl(String url) {
+        WebSocketServer.addPlayerUrl = url;
+    }
+
+    @Value("${matching.url.remove}")
+    public void setRemovePlayerUrl(String url) {
+        WebSocketServer.removePlayerUrl = url;
+    }
 
     @Autowired // 非单例模式下无法自动注入，需要使用static方法注入
     public void setUserMapper(UserMapper userMapper) {

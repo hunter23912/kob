@@ -22,7 +22,7 @@ const selectLanguage = (bot, lang) => {
 
 const refresh_bots = async () => {
   try {
-    const resp = await axios.get("http://localhost:8080/api/user/bot/getlist/", {
+    const resp = await axios.get("/api/user/bot/getlist/", {
       headers: {
         Authorization: `Bearer ${userStore.token}`,
       },
@@ -51,7 +51,7 @@ const botadd = reactive({
 const add_bot = async () => {
   try {
     const resp = await axios.post(
-      "http://localhost:8080/api/user/bot/add/",
+      "/api/user/bot/add/",
       {
         title: botadd.title,
         description: botadd.description,
@@ -81,7 +81,7 @@ const add_bot = async () => {
 
 const remove_bot = async (bot) => {
   const resp = await axios.post(
-    "http://localhost:8080/api/user/bot/remove/",
+    "/api/user/bot/remove/",
     {
       bot_id: bot.id,
     },
@@ -100,7 +100,7 @@ const remove_bot = async (bot) => {
 
 const update_bot = async (bot) => {
   const resp = await axios.post(
-    "http://localhost:8080/api/user/bot/update/",
+    "/api/user/bot/update/",
     {
       bot_id: bot.id,
       title: bot.title,

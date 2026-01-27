@@ -14,8 +14,8 @@ dependencies {
 // 配置可执行Jar包的名称和主类
 bootJar {
     enabled = true
-    archiveBaseName = "${project.name}-${project.version}.jar"
-    mainClass = 'com.kob.backend.BotRunningSystemApplication'
+//    archiveBaseName = "${project.name}.jar"
+    mainClass = 'com.kob.botrunningsystem.BotRunningSystemApplication'
 }
 
 // 禁用不能运行的普通Jar打包

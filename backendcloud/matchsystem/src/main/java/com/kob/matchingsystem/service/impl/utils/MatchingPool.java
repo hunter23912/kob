@@ -1,6 +1,7 @@
 package com.kob.matchingsystem.service.impl.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -16,7 +17,12 @@ public class MatchingPool extends Thread {
     private  static List<Player> players = new ArrayList<>();
     private ReentrantLock lock = new ReentrantLock();
     private static RestTemplate restTemplate;
-    private static final String startGameUrl = "http://127.0.0.1:8080/pk/start/game/";
+    private static String startGameUrl;
+
+    @Value("${game.url}")
+    public void setStartGameUrl(String url){
+        MatchingPool.startGameUrl = url;
+    }
 
     @Autowired
     public void setRestTemplate(RestTemplate restTemplate) {

@@ -53,7 +53,7 @@ const update_pages = () => {
 // 向后端获取对战历史
 const pull_page = async (page) => {
   current_page = page;
-  const resp = await axios.get("http://localhost:8080/api/record/getlist/", {
+  const resp = await axios.get("/api/record/getlist/", {
     params: {
       page,
     },

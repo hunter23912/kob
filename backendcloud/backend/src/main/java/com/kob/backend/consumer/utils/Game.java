@@ -6,6 +6,7 @@ import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.Record;
 import com.kob.backend.pojo.User;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -31,7 +32,6 @@ public class Game extends Thread{
     private final ReentrantLock lock = new ReentrantLock();
     private String status = "playing";
     private String loser = ""; // all平局，A玩家输，B玩家输
-    private static final String addBotUrl = "http://localhost:8082/bot/add/";
 
 
     public Game(Integer rows, Integer cols, Integer inner_walls_count, Integer idA, Bot botA, Integer idB, Bot botB) {
@@ -150,7 +150,7 @@ public class Game extends Thread{
         data.add("user_id", player.getId().toString());
         data.add("bot_code", player.getBotCode());
         data.add("input", getInput(player));
-        WebSocketServer.restTemplate.postForObject(addBotUrl, data, String.class); // 发送给AI玩家的微服务
+        WebSocketServer.restTemplate.postForObject(WebSocketServer.addBotUrl, data, String.class); // 发送给AI玩家的微服务
     }
 
     private boolean nextStep() { // 等待两名玩家的下一步操作

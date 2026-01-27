@@ -194,3 +194,180 @@ journalctl -u ballgame-web -n 20 --no-pager
 ```bash
 sudo systemctl daemon-reload
 ```
+
+### 多项目部署方式
+- 公网流量到达服务器`80/443`端口
+- 宿主机`nginx`接收请求，识别`server_name`
+- 根据不同子域名，执行`proxy_pass`到不同端口
+- 根据`docker`端口映射，转发到不同容器内的服务
+- 容器内服务处理请求，返回响应
+
+- 最终部署项目形式如下：
+
+  ```bash
+  ./kob/
+  ├── backend.jar
+  ├── botrunningsystem.jar
+  ├── docker-compose.yml
+  ├── matchsystem.jar
+  └── web
+      ├── assets
+      │   ├── background-BInJ3AyV.jpg
+      │   ├── index-3YwQeF6I.css
+      │   └── index-B0cQU344.js
+      ├── favicon.ico
+      └── index.html
+  ```
+
+- 采用`docker compose`运行三个微服务，`docker compose`运行不同容器位于同一个虚拟网络中，可以通过容器名作为域名来进行`RPC`调用。
+
+- 其中`web`是前端`vue`构建的代码，前端`vue`打包命令：
+
+  ```bash
+  pnpm run build
+  ```
+
+  然后生成dist文件夹，将其中所有文件传到服务器项目根目录中的`web`目录下：
+
+  ```bash
+  cd dist
+  scp -r ./* Server:/home/jax/kob/web/
+  ```
+
+- `jar`包是三个后端微服务，`docker`启动脚本为`yml`文件。`yml`文件内容如下：
+
+  ```yml
+  services:
+    kob-backend:
+      image: eclipse-temurin:21-jdk-alpine
+      container_name: kob-backend
+      volumes:
+        - ./backend.jar:/app/backend.jar
+      working_dir: /app
+      environment:
+        - MATCH_SYSTEM_URL=http://kob-matchsystem:8081
+        - BOTRUNNING_SYSTEM_URL=http://kob-botrunningsystem:8082
+      command: java -Xmx512m -Xms256m -jar backend.jar
+      ports:
+        - "8080:8080"
+      restart: always
+  
+    kob-matchsystem:
+      image: eclipse-temurin:21-jdk-alpine
+      container_name: kob-matchsystem
+      volumes:
+        - ./matchsystem.jar:/app/matchsystem.jar
+      working_dir: /app
+      environment:
+        - GAME_SYSTEM_URL=http://kob-backend:8080
+      command: java -Xmx256m -Xms128m -jar matchsystem.jar
+      ports:
+        - "8081:8081"
+      restart: always
+  
+    kob-botrunningsystem:
+      image: eclipse-temurin:21-jdk-alpine
+      container_name: kob-botrunningsystem
+      volumes:
+        - ./botrunningsystem.jar:/app/botrunningsystem.jar
+      working_dir: /app
+      environment:
+        - GAME_SYSTEM_URL=http://kob-backend:8080
+      # BotRunningSystem 需要 JDK 进行动态编译，此镜像已包含
+      command: java -Xmx256m -Xms128m -jar botrunningsystem.jar
+      ports:
+        - "8082:8082"
+      restart: always
+  ```
+
+  - 该项目通过3个docker运行3个微服务，8080是后端总入口，8081是匹配系统，8082是AI代码编译执行系统。
+
+  - 通过设置`environmnet`将各个容器名作为`RPC`的域名地址，然后`spring boot`中在`application.properties`中读取环境变量：
+
+    ```ini
+    matching.url.add=${MATCH_SYSTEM_URL}/player/add/
+    matching.url.remove=${MATCH_SYSTEM_URL}/player/remove/
+    botrunning.url.add=${BOTRUNNING_SYSTEM_URL}/bot/add/
+    ```
+
+  - 然后`java`代码中使用注解注入：
+
+    ```java
+        private static  String addPlayerUrl;
+        private static  String removePlayerUrl;
+        public static String addBotUrl;
+    
+        @Value("${botrunning.url.add}")
+        public void setddBotUrl(String url) {
+            WebSocketServer.addBotUrl = url;
+        }
+    
+        @Value("${matching.url.add}")
+        public void setAddPlayerUrl(String url) {
+            WebSocketServer.addPlayerUrl = url;
+        }
+    
+        @Value("${matching.url.remove}")
+        public void setRemovePlayerUrl(String url) {
+            WebSocketServer.removePlayerUrl = url;
+        }
+    ```
+
+    对于`static`变量必须通过`set`接口设置，因为`@Value`只能注入对象实例，不能直接注入类本身。
+
+- 该项目中的`docker`相关命令：
+
+  ```bash
+  # 在项目根目录下，根据配置文件，在后台运行整套容器服务
+  docker compose up -d
+  
+  docker compose down
+  
+  docker compose restart
+  ```
+
+  - `docker compose`允许用户通过一个`yaml`文件定义和运行多个容器。
+  - `up`执行：读取配置、拉取构建镜像、创建容器、启动服务。
+  - `-d`分离模式，后台运行
+
+#### ubuntu中的nginx主流部署方式
+
+- 文件目录
+
+```bash
+vim /etc/nginx/site-available/project_name
+```
+
+- 在available目录下创建项目的nginx文件：
+
+```ini
+server {
+    listen 80;
+    server_name kob.jaxenwang.top;
+    location / {
+        root /home/jax/kob/web;
+        index index.html;
+        try_files $uri  $uri/ /index.html;
+    }
+    location /api {
+        proxy_pass http://127.0.0.1:8080;
+        # 传递真实的客户端信息，否则后端看到的 IP 全是 127.0.0.1
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    location /websocket {
+        proxy_pass http://127.0.0.1:8080;
+        # 显式指定使用http/1.1
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```

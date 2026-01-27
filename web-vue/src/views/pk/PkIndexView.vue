@@ -11,7 +11,7 @@ const userStore = useUserStore();
 const pkStore = usePkStore();
 const recordStore = useRecordStore();
 let socket = null;
-const socketUrl = `ws://localhost:8080/websocket/${userStore.token}`;
+const socketUrl = `/websocket/${userStore.token}`;
 
 onMounted(() => {
   recordStore.updateIsRecord(false);
