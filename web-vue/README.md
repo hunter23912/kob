@@ -163,3 +163,14 @@ git reset --hard <reflog_id>  # 恢复到之前的某个操作
 - 推荐使用`vue3-ace-editor`，支持多种编程语言和主题，易于集成和使用。
   - 几种主题: `textmate`, `monokai`, `dracula`, `tomorrow`, `kuroir`, `twilight`, `xcode`, `solarized_light`, `solarized_dark`
   - 支持语言: `c_cpp`, `java`, `python`, `javascript`, `html`, `css`, `json`, `xml`, `ruby`, `php`, `go`, `swift`等
+
+#### 几个常用的前端库样式库
+
+- `daisyUI`: 基于 Tailwind CSS 的组件库，提供丰富的 UI 组件和样式，易于定制和扩展。
+- `bootstrap`: 流行的前端框架，提供响应式设计和丰富的组件，适合快速开发现代 web 应用。
+- `tailwind CSS`: 实用优先的 CSS 框架，提供低级别的样式类，允许开发者快速构建自定义设计。
+- 各个大厂著名的自研UI库
+  - `Ant Design (AntD)`: 严谨、商务，国内后台系统的“行业标准”。
+  - `TDesign`: 中性、稳定，支持多框架（Vue/React）。
+  - `Material Design` : 强调光影和物理质感。
+  - `Arco Design / Semi Design`字节跳动。极简、清爽，很有“抖音感”。

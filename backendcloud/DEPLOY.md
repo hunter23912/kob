@@ -371,3 +371,27 @@ server {
     }
 }
 ```
+
+#### 如何申请免费的SSL证书
+
+使用`certbot`一个`python`脚本工具申请免费证书。
+
+```bash
+# 下载certbot
+apt install certbot python3-certbot-nginx
+
+# 获取并安装证书，certbot会自动扫描nginx配置，找到域名，并申请证书、修改配置文件
+certbot --nginx
+```
+
+如果只要个证书文件，不想自动修改配置文件：
+
+```bash
+certbot certonly --nginx
+
+# 查看自动续期是否正常，默认90天 
+certbot renew --dry-run
+```
+
+生成的证书文件在`/etc/letsencrypt/live/域名/`
+
