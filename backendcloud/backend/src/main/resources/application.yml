@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    username: root
+    password: wjh123456
+    url: jdbc:mysql://113.44.43.227:3306/kob?serverTimezone=Asia/Shanghai&Unicode=true&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+matching:
+  url:
+    add: ${MATCH_SYSTEM_URL:http://127.0.0.1:8081}/player/add/
+    remove: ${MATCH_SYSTEM_URL:http://127.0.0.1:8081}/player/remove/
+
+botrunning:
+  url:
+    add: ${BOT_RUNNING_URL:http://127.0.0.1:8082}/bot/add/
+
+acwing:
+  redirect_uri: ${FRONTEND_URL:http://localhost:5173}/user/account/acwing/web/receive_code/

@@ -40,8 +40,15 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/account/token/", "/api/user/account/register/", "/websocket/**").permitAll()
-                        .requestMatchers("/pk/start/game/", "/pk/receive/bot/move/").permitAll()
+                        .requestMatchers(
+                                "/api/user/account/token/",
+                                "/api/user/account/register/",
+                                "/websocket/**",
+                                "/pk/start/game/",
+                                "/pk/receive/bot/move/",
+                                "/api/user/account/acwing/web/apply_code/",
+                                "/api/user/account/acwing/web/receive_code/"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 );

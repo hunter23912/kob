@@ -67,7 +67,7 @@ public class RegisterServiceImpl implements RegisterService {
         // 默认头像
         String photo = "https://picx.zhimg.com/v2-ad67b1a83ab788f4407a79786b2462bf_1440w.jpg";
 
-        User user = new User(null, username, encodedPassword, photo, 1500);
+        User user = new User(null, username, encodedPassword, photo, 1500, null);
         userMapper.insert(user);
 
         map.put("error_message", "success");

@@ -13,6 +13,7 @@ dependencies {
     // 2. 数据库相关
     // Spring Boot 默认管理了 mysql-connector-java 的版本，直接去掉版本号
     implementation 'com.mysql:mysql-connector-j'
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:4.1.0-M1")
 
     // 3. MyBatis Plus (Spring Boot 管理之外的第三方库，建议在父项目定义版本或在此写全)
     implementation 'com.baomidou:mybatis-plus-spring-boot4-starter:3.5.16'
@@ -22,6 +23,7 @@ dependencies {
     // 4. 其他工具类
     implementation 'com.alibaba:fastjson:2.0.60'
     implementation 'io.mongock:jwt-api:1.0.3'
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
 
     // 5. 测试
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

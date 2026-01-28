@@ -122,6 +122,41 @@ graph TD
     style BP fill:#e1f5fe,stroke:#01579b
     style BRS fill:#fff9c4,stroke:#fbc02d
 ```
+### OAuth2登录认证
+#### 基本流程时序图
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 用户
+    participant Client as 客户端应用
+    participant ThirdServer as 第三方服务器
+
+    User->>Client: 请求用第三方账号登录
+    Client->>ThirdServer: 请求第三方oauth2授权登录
+    ThirdServer->>User: 要求用户确认授权许可
+    User-->>ThirdServer: 用户同意授权
+    ThirdServer-->>Client: 返回授权码和状态码（限时防CSRF）并发送给应用
+    Note over Client,ThirdServer: 第三方将授权码和状态码先给前端，前端再传给后端
+
+    Client->>ThirdServer: 发送应用ID，授权码，应用密钥
+    ThirdServer-->>Client: 返回访问令牌和用户关于该应用的唯一标识openid
+
+    Client->>ThirdServer: 用令牌和openid请求受保护资源
+    ThirdServer-->>Client: 返回受保护资源
+    Client->>User: 展示资源内容
+```
+#### 具体步骤
+##### 申请授权码
+请求授权码的`api`:
+```code
+AcWing.api.oauth2.authorize(
+    appid, // 应用ID
+    redirect_uri, // 接收授权码的地址
+    scope, // 申请授权的范围，比如获取用户信息等
+    state, // 用于防止CSRF(跨站请求伪造)攻击的随机字符串
+    callback // 重定向后的回调函数
+);
+```
 
 ### 项目上线基本流程
 #### 在服务器上执行的步骤

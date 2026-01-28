@@ -3,6 +3,7 @@ import ContentField from "../../../components/ContentField.vue";
 import { useUserStore } from "../../../store/user";
 import { ref, onMounted } from "vue";
 import router from "../../../router";
+import axios from "axios";
 
 const userStore = useUserStore();
 
@@ -36,6 +37,16 @@ const login = () => {
     },
   });
 };
+
+const acwing_login = async () => {
+  const resp = await axios.get("/api/user/account/acwing/web/apply_code/");
+  const data = resp.data;
+  if (data) {
+    if (data.result === "success") {
+      window.location.replace(data.apply_code_url);
+    }
+  }
+};
 </script>
 
 <template>
@@ -54,6 +65,15 @@ const login = () => {
           <div class="error-message">{{ error_message }}</div>
           <button type="submit" class="btn btn-primary">提交</button>
         </form>
+        <div style="text-align: center; margin-top: 1rem; cursor: pointer">
+          <img
+            @click="acwing_login"
+            width="30"
+            src="https://app165.acapp.acwing.com.cn/static/image/settings/acwing_logo.png"
+            alt=""
+          />
+          <div style="font-size: 0.8rem">使用 AcWing 账号登录</div>
+        </div>
       </div>
     </div>
   </ContentField>

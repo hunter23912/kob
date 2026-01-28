@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: matchsystem
+
+server:
+  port: 8081
+
+game:
+  url: ${GAME_SYSTEM_URL}/pk/game/start/
